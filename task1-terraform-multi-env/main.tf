@@ -1,7 +1,3 @@
-locals {
-  name = "${var.project_name}-${var.environment}"
-}
-
 module "vpc" {
   source = "./modules/vpc"
 
@@ -36,11 +32,6 @@ module "rds" {
 
 resource "aws_s3_bucket" "app_bucket" {
   bucket = "${local.name}-${var.bucket_suffix}"
-
-  tags = {
-    Name        = "${local.name}-bucket"
-    Environment = var.environment
-  }
 }
 
 resource "aws_s3_bucket_versioning" "app_bucket" {
