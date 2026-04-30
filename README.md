@@ -1,33 +1,56 @@
-create an ec2 instance  
-Install a webserver (Nginx)  
-Browse it using browser  
-![][image1]
+create an ec2 instance
 
- Create a new VPC  
-create an instance inside that VPC  
+Install a webserver (Nginx)
+
+Browse it using browser
+
+![](media/image20.png)
+
+Create a new VPC
+
+create an instance inside that VPC
+
 Map your Domain with your Nginx webserver
 
-![][image2]
+![](media/image13.png)
 
-create ec2   
-install web app  
-add files  
-capture image   
-use image to configure launch template  
-use launch template to configure Auto Scaling Group  
-•⁠  ⁠Policy to auto scale
+create ec2
 
-![][image3]
+install web app
 
-Task 1 — EC2: Allow All Actions BUT Deny Termination  
-Task 2 — S3: Allow Full Access to All Buckets BUT Deny One Specific Bucket  
-Task 3 — EC2: Allow Start/Stop BUT Deny in Specific Region  
-Task 4 — VPC: Allow VPC Creation BUT Deny Internet Gateway Creation  
-Task 5 — S3: Deny Deletion BUT Allow Everything Else  
-![][image4]  
-\\s3 secure bucket
+add files
 
-![][image5]
+capture image
+
+use image to configure launch template
+
+use launch template to configure Auto Scaling
+Group
+
+•⁠ ⁠Policy to auto scale
+
+![](media/image34.png)
+
+Task 1 — EC2: Allow All Actions BUT Deny
+Termination
+
+Task 2 — S3: Allow Full Access to All Buckets BUT
+Deny One Specific Bucket
+
+Task 3 — EC2: Allow Start/Stop BUT Deny in Specific
+Region
+
+Task 4 — VPC: Allow VPC Creation BUT Deny Internet
+Gateway Creation
+
+Task 5 — S3: Deny Deletion BUT Allow Everything
+Else
+
+![](media/image29.png)
+
+\s3 secure bucket
+
+![](media/image25.png)
 
 Only /images/\* publicly readable
 
@@ -45,240 +68,272 @@ Prevent deletion under finance/\*
 
 …All this in bucket policy
 
-{  
-    "Version": "2012-10-17",  
-    "Statement": \[  
-        {  
-            "Sid": "PublicReadImagesOnly",  
-            "Effect": "Allow",  
-            "Principal": "\*",  
-            "Action": "s3:GetObject",  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/images/\*"  
-        },  
-        {  
-            "Sid": "AllowTrustedUploadsOnlyToUploadsPrefix",  
-            "Effect": "Allow",  
-            "Principal": {  
-                "AWS": "arn:aws:iam::248263319485:root"  
-            },  
-            "Action": "s3:PutObject",  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/uploads/\*"  
-        },  
-        {  
-            "Sid": "DenyUploadsOutsideUploadsPrefixForTrustedPrincipals",  
-            "Effect": "Deny",  
-            "Principal": {  
-                "AWS": "arn:aws:iam::248263319485:root"  
-            },  
-            "Action": "s3:PutObject",  
-            "NotResource": "arn:aws:s3:::donisehrawat-secure-248263319485/uploads/\*"  
-        },  
-        {  
-            "Sid": "DenyObjectDeletion",  
-            "Effect": "Deny",  
-            "Principal": "\*",  
-            "Action": \[  
-                "s3:DeleteObjectVersion",  
-                "s3:DeleteObject"  
-            \],  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/\*"  
-        },  
-        {  
-            "Sid": "DenyFinanceObjectDeletion",  
-            "Effect": "Deny",  
-            "Principal": "\*",  
-            "Action": \[  
-                "s3:DeleteObjectVersion",  
-                "s3:DeleteObject"  
-            \],  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/finance/\*"  
-        },  
-        {  
-            "Sid": "DenyUnencryptedUploads",  
-            "Effect": "Deny",  
-            "Principal": "\*",  
-            "Action": "s3:PutObject",  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/\*",  
-            "Condition": {  
-                "Null": {  
-                    "s3:x-amz-server-side-encryption": "true"  
-                }  
-            }  
-        },  
-        {  
-            "Sid": "DenyUnsupportedUploadEncryption",  
-            "Effect": "Deny",  
-            "Principal": "\*",  
-            "Action": "s3:PutObject",  
-            "Resource": "arn:aws:s3:::donisehrawat-secure-248263319485/\*",  
-            "Condition": {  
-                "StringNotEquals": {  
-                    "s3:x-amz-server-side-encryption": \[  
-                        "AES256",  
-                        "aws:kms"  
-                    \]  
-                }  
-            }  
-        }  
-    \]  
+{
+
+"Version": "2012-10-17",
+
+"Statement": \[
+
+{
+
+"Sid": "PublicReadImagesOnly",
+
+"Effect": "Allow",
+
+"Principal": "\*",
+
+"Action": "s3:GetObject",
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/images/\*"
+
+},
+
+{
+
+"Sid":
+"AllowTrustedUploadsOnlyToUploadsPrefix",
+
+"Effect": "Allow",
+
+"Principal": {
+
+"AWS": "arn:aws:iam::248263319485:root"
+
+},
+
+"Action": "s3:PutObject",
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/uploads/\*"
+
+},
+
+{
+
+"Sid":
+"DenyUploadsOutsideUploadsPrefixForTrustedPrincipals",
+
+"Effect": "Deny",
+
+"Principal": {
+
+"AWS": "arn:aws:iam::248263319485:root"
+
+},
+
+"Action": "s3:PutObject",
+
+"NotResource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/uploads/\*"
+
+},
+
+{
+
+"Sid": "DenyObjectDeletion",
+
+"Effect": "Deny",
+
+"Principal": "\*",
+
+"Action": \[
+
+"s3:DeleteObjectVersion",
+
+"s3:DeleteObject"
+
+\],
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/\*"
+
+},
+
+{
+
+"Sid": "DenyFinanceObjectDeletion",
+
+"Effect": "Deny",
+
+"Principal": "\*",
+
+"Action": \[
+
+"s3:DeleteObjectVersion",
+
+"s3:DeleteObject"
+
+\],
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/finance/\*"
+
+},
+
+{
+
+"Sid": "DenyUnencryptedUploads",
+
+"Effect": "Deny",
+
+"Principal": "\*",
+
+"Action": "s3:PutObject",
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/\*",
+
+"Condition": {
+
+"Null": {
+
+"s3:x-amz-server-side-encryption": "true"
+
 }
 
-Bucket versioning 
+}
 
-![][image6]
+},
+
+{
+
+"Sid": "DenyUnsupportedUploadEncryption",
+
+"Effect": "Deny",
+
+"Principal": "\*",
+
+"Action": "s3:PutObject",
+
+"Resource":
+"arn:aws:s3:::donisehrawat-secure-248263319485/\*",
+
+"Condition": {
+
+"StringNotEquals": {
+
+"s3:x-amz-server-side-encryption": \[
+
+"AES256",
+
+"aws:kms"
+
+\]
+
+}
+
+}
+
+}
+
+\]
+
+}
+
+Bucket versioning
+
+![](media/image7.png)
 
 Object Lock governance mode
 
-![][image7]
+![](media/image8.png)
 
-Lifecycle rule for uploads/\*![][image8]
+Lifecycle rule for
+uploads/\*![](media/image21.png)
 
-![][image9]
+![](media/image27.png)
 
 Server access logging
 
-![][image10]
+![](media/image18.png)
 
 Logs delivered to secure bucket
 
-![][image11]
+![](media/image22.png)
 
 Logs bucket not public
 
-![][image12]
+![](media/image10.png)
 
 S3 access logging
 
-![][image13]
+![](media/image30.png)
 
 Static website hosting
 
-![][image14]
+![](media/image32.png)
 
 Website working
 
-![][image15]
+![](media/image2.png)
 
-IAM groups/policies![][image16]  
-![][image17]
+IAM
+groups/policies![](media/image14.png)
 
-CloudWatch alarms \+ SNS![][image18]  
-![][image19]
+![](media/image11.png)
 
-RDS primary \+ replica
+CloudWatch alarms +
+SNS![](media/image6.png)
 
-![][image20]
+![](media/image26.png)
 
-DB subnet group  
-![][image21]
+RDS primary + replica
+
+![](media/image28.png)
+
+DB subnet group
+
+![](media/image12.png)
 
 Hub-and-spoke VPCs
 
-![][image22]  
-VPC peering  
-![][image23]
+![](media/image24.png)
 
-Route tables  
-![][image24]
+VPC peering
+
+![](media/image17.png)
+
+Route tables
+
+![](media/image33.png)
 
 S3 VPC endpoint
 
-![][image25]
+![](media/image16.png)
 
-Private EC2 \+ no public IP
+Private EC2 + no public IP
 
-![][image26]  
-![][image27]
+![](media/image4.png)
 
-SSM state Manager  
-![][image28]
+![](media/image1.png)
 
-Centralized logging  
-![][image29]  
-![][image30]
+SSM state Manager
 
-ALB access logs  
-![][image31]
+![](media/image9.png)
+
+Centralized logging
+
+![](media/image23.png)
+
+![](media/image35.png)
+
+ALB access logs
+
+![](media/image15.png)
 
 WAF rules
 
-![][image32]
+![](media/image5.png)
 
-AMI backup  
-![][image33]
+AMI backup
 
-Auto Scaling Group  
-![][image34]
+![](media/image19.png)
 
-Route 53 failover  
-![][image35]
+Auto Scaling Group
 
-[image1]: images/image1.png
+![](media/image3.png)
 
-[image2]: images/image2.png
+Route 53 failover
 
-[image3]: images/image3.png
-
-[image4]: images/image4.png
-
-[image5]: images/image5.png
-
-[image6]: images/image6.png
-
-[image7]: images/image7.png
-
-[image8]: images/image8.png
-
-[image9]: images/image9.png
-
-[image10]: images/image10.png
-
-[image11]: images/image11.png
-
-[image12]: images/image12.png
-
-[image13]: images/image13.png
-
-[image14]: images/image14.png
-
-[image15]: images/image15.png
-
-[image16]: images/image16.png
-
-[image17]: images/image17.png
-
-[image18]: images/image18.png
-
-[image19]: images/image19.png
-
-[image20]: images/image20.png
-
-[image21]: images/image21.png
-
-[image22]: images/image22.png
-
-[image23]: images/image23.png
-
-[image24]: images/image24.png
-
-[image25]: images/image25.png
-
-[image26]: images/image26.png
-
-[image27]: images/image27.png
-
-[image28]: images/image28.png
-
-[image29]: images/image29.png
-
-[image30]: images/image30.png
-
-[image31]: images/image31.png
-
-[image32]: images/image32.png
-
-[image33]: images/image33.png
-
-[image34]: images/image34.png
-
-[image35]: images/image35.png
+![](media/image31.png)
