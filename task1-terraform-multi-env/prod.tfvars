@@ -1,0 +1,7 @@
+region        = "ap-south-1"
+environment   = "prod"
+instance_type = "t3.micro"
+db_name       = "myappprod"
+db_username   = "adminuser"
+db_password   = "ChangeMe12345"
+bucket_suffix = "prod-12345"

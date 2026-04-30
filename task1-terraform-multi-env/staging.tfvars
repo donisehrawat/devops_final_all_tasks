@@ -1,0 +1,7 @@
+region        = "ap-south-1"
+environment   = "staging"
+instance_type = "t3.micro"
+db_name       = "myappstaging"
+db_username   = "adminuser"
+db_password   = "ChangeMe12345"
+bucket_suffix = "staging-12345"

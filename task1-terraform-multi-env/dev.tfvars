@@ -1,0 +1,7 @@
+region        = "ap-south-1"
+environment   = "dev"
+instance_type = "t3.micro"
+db_name       = "myappdev"
+db_username   = "adminuser"
+db_password   = "ChangeMe12345"
+bucket_suffix = "dev-12345"
