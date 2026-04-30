@@ -1,19 +1,3 @@
-locals {
-  all_users = distinct(flatten([
-    for env_name, env_data in var.environments : env_data.users
-  ]))
-
-  user_environment_pairs = flatten([
-    for env_name, env_data in var.environments : [
-      for user_name in env_data.users : {
-        key       = "${env_name}-${user_name}"
-        env_name  = env_name
-        user_name = user_name
-      }
-    ]
-  ])
-}
-
 resource "aws_s3_bucket" "environment_bucket" {
   for_each = var.environments
 
@@ -44,7 +28,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "environment_bucket" {
   bucket = aws_s3_bucket.environment_bucket[each.key].id
 
   rule {
-    id     = "environment-lifecycle"
+    id     = "lifecycle"
     status = "Enabled"
 
     filter {
@@ -63,7 +47,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "environment_bucket" {
 }
 
 resource "aws_iam_user" "users" {
-  for_each = toset(local.all_users)
+  for_each = toset(distinct(flatten([
+    for env_name, env_data in var.environments : env_data.users
+  ])))
 
   name = each.key
 }
@@ -78,17 +64,12 @@ resource "aws_iam_policy" "environment_bucket_policy" {
     Statement = [
       {
         Effect = "Allow"
-        Action = [
-          "s3:ListBucket"
-        ]
+        Action = ["s3:ListBucket"]
         Resource = aws_s3_bucket.environment_bucket[each.key].arn
       },
       {
         Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject"
-        ]
+        Action = ["s3:GetObject", "s3:PutObject"]
         Resource = "${aws_s3_bucket.environment_bucket[each.key].arn}/*"
       }
     ]
@@ -97,7 +78,15 @@ resource "aws_iam_policy" "environment_bucket_policy" {
 
 resource "aws_iam_user_policy_attachment" "bucket_access" {
   for_each = {
-    for pair in local.user_environment_pairs : pair.key => pair
+    for pair in flatten([
+      for env_name, env_data in var.environments : [
+        for user_name in env_data.users : {
+          key       = "${env_name}-${user_name}"
+          env_name  = env_name
+          user_name = user_name
+        }
+      ]
+    ]) : pair.key => pair
   }
 
   user       = aws_iam_user.users[each.value.user_name].name
