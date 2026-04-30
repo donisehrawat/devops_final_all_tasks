@@ -1,6 +1,6 @@
 # devops_final_all_tasks
 
-Beginner-friendly Terraform solutions for the final DevOps tasks.
+This repo contains my Terraform code for the final DevOps tasks. I kept the code simple and separated the tasks into different folders.
 
 Original task document:
 
@@ -18,10 +18,10 @@ devops_final_all_tasks/
 
 ## Task 1
 
-Multi-environment Terraform project using modules:
+Multi-environment Terraform project using modules.
 
 - VPC module
-- EC2 / ALB / Launch Template / Auto Scaling module
+- ALB module with Launch Template and Auto Scaling Group
 - RDS module
 - S3 bucket with versioning
 - dev, staging, and prod variable files
@@ -40,7 +40,7 @@ terraform apply -var-file=dev.tfvars
 
 ## Task 2
 
-Terraform using:
+Terraform using these concepts:
 
 - `for_each` for one S3 bucket per environment
 - S3 versioning only when enabled
@@ -60,7 +60,7 @@ terraform apply
 
 ## Task 3
 
-Simple Terraform for:
+Simple Terraform code for:
 
 - VPC
 - public and private subnets

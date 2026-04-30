@@ -8,8 +8,8 @@ module "vpc" {
   name = local.name
 }
 
-module "ec2" {
-  source = "./modules/ec2"
+module "alb" {
+  source = "./modules/alb"
 
   name               = local.name
   vpc_id             = module.vpc.vpc_id
@@ -28,7 +28,7 @@ module "rds" {
   name                  = local.name
   vpc_id                = module.vpc.vpc_id
   private_subnet_ids    = module.vpc.private_subnet_ids
-  ec2_security_group_id = module.ec2.ec2_security_group_id
+  ec2_security_group_id = module.alb.ec2_security_group_id
   db_name               = var.db_name
   db_username           = var.db_username
   db_password           = var.db_password
